@@ -1,0 +1,251 @@
+﻿@model InventoryManagement.ViewModels.InventoryAddEditViewModel
+@{
+    ViewData["Title"] = "Add Inventory";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Add New Inventory</h3>
+        </div>
+    </div>
+    <div class="row">
+        <form>
+            <div class="form-group row mt-3 col-md-9">
+                <label class="col-md-2 col-form-label">Code</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="code">
+                </div>
+            </div>
+            <div class="form-group row mt-3 col-md-9">
+                <label class="col-md-2 col-form-label">Name</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="name">
+                </div>
+            </div>
+            <div class="form-group row mt-3 col-md-9">
+                <label class="col-md-2 col-form-label">Upload Images</label>
+                <div class="col-sm-10">
+                    <table class="table" id="tblInventoryMedia">
+                        <thead id="tblheadInventoryMedia">
+                            <tr>
+                                <td>Image</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody id="tbbodymedia">
+                        </tbody>
+                        <tfoot>
+                            <tr><td colspan="2"><input class="form-control" type="file" onchange="readURL(this)" id="inventoryMedia" multiple /></td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="form-group row mt-3 col-md-9">
+                <label class="col-md-2 col-form-label">Inventory Detail</label>
+                <div class="col-sm-10">
+                    <table class="table" id="tblInventoryDetail">
+                        <thead id="tblheadInventoryDetail">
+                            <tr>
+                                @* <th scope="col">#</th> *@
+                                <td hidden>Id</td>
+                                <td>Detail</td>
+                                <td>Value</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody id="tbbody">
+                        </tbody>
+                        <tfoot>
+                            <tr><td colspan="2"><input type="button" id="btnAddDetail" value="Add Inventory Detail" class="btn btn-secondary" /></td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" id="btnSubmit"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="addEditInventoryDetailModal" tabindex="-1" role="dialog" aria-labelledby="addEditInventoryDetail" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEditInventoryDetailModalLabel">Add</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="inventoryDetailId" class="col-form-label">Detail:</label>
+                        <select class="form-select" id="inventoryDetailId"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Value:</label>
+                        <textarea class="form-control" id="inventoryDetailValue"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnAddEditInventoryDetail">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+
+            $("#btnSubmit").click(function (e) {
+                //define a object.
+                e.preventDefault();
+                var code = $("#code").val();
+                var name = $("#name").val();
+
+                var images = [];
+                $("#tblInventoryMedia > tbody > tr > td > img").each(function () {
+                    var image = {};
+                    image.MediaId = null;
+                    image.MediaFile = $(this).attr('src').split(',')[1];
+                    var media = $(this).attr('src');
+                        images.push(image);
+                });
+
+                var details = [];
+                $("#tblInventoryDetail >tbody >tr").each(function (index, item) {
+                    var detail = {};
+                    detail.DetailId = $(item).find("#detailId").val();
+                    detail.DetailValue = $(item).find("#detailValue").html();
+                    details.push(detail);
+                });
+
+                var formData = {
+                    Code:code,
+                    Name: name,
+                    InventoryMedias : images,
+                    InventoryDetails : details
+                };
+
+                console.log(formData);
+                console.log(JSON.stringify(formData));
+
+
+                $.ajax({
+                    url: '/Inventory/AddInventory',
+                    type: "POST",
+                    // data: JSON.stringify(formData),
+                    // data: {"Code":"ABSCD", "Name":"Dhea"},
+                    data: formData,
+
+                    // content-type:"application/json",
+                    // data: formData,
+                    // async: false,
+                    success: function (result) {
+                        if (result != "") {
+                            alert(result.message);
+                        }
+                    },
+                    error: function (err) {
+                        alert(err.message);
+                    }
+                });
+            });
+
+            $("#btnAddDetail").click(function () {
+                $.ajax({
+                    url: '/Inventory/GetDropdownListDetail',
+                    type: 'GET',
+                    success: function (data) {
+                        var toAppend = ''
+                        for (var i in data) {
+                            $("#inventoryDetailId").empty();
+                            $("#inventoryDetailValue").val('');
+
+                            toAppend += '<option value="' + data[i].value + '">' + data[i].text + '</option>>'
+                        }
+                        $("#inventoryDetailId").append(toAppend)
+                        $("#addEditInventoryDetailModal").modal('show');
+                    },
+                    error: function (error) {
+                        // $(that).remove();
+                        // DisplayError(error.statusText);
+                    }
+                });
+            });
+
+            $("#btnAddEditInventoryDetail").click(function () {
+                var count = $("#tbbody >tr").length;
+                var row = count + 1;
+                var detailId = $('#inventoryDetailId').val();
+                console.log(detailId);
+                var detailName = $('#inventoryDetailId').find('option:selected').text();
+                var detailValue = $("#inventoryDetailValue").val();
+                $("#tblheadInventoryDetail").show();
+                // $("#tbbody").append("<tr><th scope='row'>" + row + "</th><td name='InventoryDetails[" + count + "].DetailName'>" + detailName + "</td><td><name='InventoryDetails[" + count + "].DetailValue'>" + detailValue + "</td><td><input type='button' value='remove' class='btn btn-link btnRemoveDetail'/></td><td hidden name='InventoryDetails[" + count + "].DetailID>" + detailId + "</td></tr>");
+                // $("#tbbody").append("<tr><td id='detailName'>" + detailName + "</td><td><name='detailValue'>" + detailValue + "</td><td><input type='button' value='remove' class='btn btn-link btnRemoveDetail'/></td><td hidden name='detailId'>" + detailId + "</td></tr>");
+                $("#tbbody").append("<tr><td id='detailName' name='InventoryDetails[" + count + "].DetailName'>" + detailName + "</td><td id='detailValue' name='InventoryDetails[" + count + "].DetailValue'>" + detailValue + "</td><td><input type='button' value='remove' class='btn btn-link btnRemoveDetail'/></td><td><input type='hidden' id='detailId' name='InventoryDetails[" + count + "].DetailID' value='" + detailId + "'></td></tr>");
+
+                AddRemoveAction(); //for added tblDetail row
+                $("#addEditInventoryDetailModal").modal('hide');
+            });
+
+            $("#tblheadInventoryMedia").hide();
+            $("#tblheadInventoryDetail").hide();
+            AddRemoveAction(); //for initial tblDetail row
+            //add remove button click event
+            function AddRemoveAction() {
+                $(".btnRemoveDetail").each(function (index, item) {
+                    $(item).click(function () {
+                        $(this).closest('tr').remove();
+                        if ($("#tbbody >tr").length < 1) {
+                            $("#tblheadInventoryDetail").hide();
+                        }
+                    });
+                })
+            }
+
+            
+        });
+        
+        function PreviewImages() {
+            frame.src = URL.createObjectURL(event.target.files[0]);
+        }
+
+        function readURL(input) {
+            if (input.files && input.files.length > 0) {
+                $("#tblheadInventoryMedia").show();
+                for (var i = 0; i < input.files.length; i++) {
+                    var reader = new FileReader();
+                    var count = $("#tbbodymedia >tr").length;
+                    reader.onload = function (e) {
+                        $("#tbbodymedia").append();
+                        src = e.target.result;
+                        // var img = $('<img>', { src: , })
+                        $("#tbbodymedia").append("<tr><td><img src='" + src + "' width='200'  ></td><td><input type='button' value='remove' class='btn btn-link btnRemoveMedia'/></td></tr>");
+                        AddRemoveMediaAction();
+                    }
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+        }
+
+        function AddRemoveMediaAction() {
+            $(".btnRemoveMedia").each(function (index, item) {
+                $(item).click(function () {
+                    $(this).closest('tr').remove();
+                    if ($("#tbbodymedia >tr").length < 1) {
+                        $("#tblheadInventoryMedia").hide();
+                    }
+                });
+            })
+        }
+
+        
+
+    </script>
+}

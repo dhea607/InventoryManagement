@@ -1,0 +1,75 @@
+﻿@model InventoryManagement.ViewModels.InventoryAddEditViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    @* <h4>InventoryAddEditViewModel</h4> *@
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Image
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.InventoryMedias)
+            {
+                <tr>
+                    <td>
+                        <img width="200" src=@item.MediaFile>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Detail
+                </th>
+                <th>
+                    Value
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.InventoryDetails)
+            {
+                <tr>
+                    <td>
+                        @item.DetailName
+                    </td>
+                    <td>
+                        @item.DetailValue
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.InventoryId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
