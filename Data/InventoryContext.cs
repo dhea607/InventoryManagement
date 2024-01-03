@@ -28,9 +28,5 @@ namespace InventoryManagement.Data
             modelBuilder.Entity<InventoryDetail>().ToTable("InventoryDetail");
             modelBuilder.Entity<Inventory>().ToTable("Inventory");
         }
-
-        public DbSet<InventoryManagement.ViewModels.InventoryListViewModel> InventoryListViewModel { get; set; } = default!;
-
-        public DbSet<InventoryManagement.ViewModels.InventoryAddEditViewModel> InventoryAddEditViewModel { get; set; } = default!;
     }
 }

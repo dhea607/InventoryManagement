@@ -4,6 +4,7 @@ using InventoryManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryManagement.Migrations
 {
     [DbContext(typeof(InventoryContext))]
-    partial class InventoryContextModelSnapshot : ModelSnapshot
+    [Migration("20240103015525_createmigration")]
+    partial class createmigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,25 +53,25 @@ namespace InventoryManagement.Migrations
                         new
                         {
                             DetailId = 1,
-                            CreatedAt = new DateTime(2024, 1, 3, 9, 3, 52, 39, DateTimeKind.Local).AddTicks(9289),
+                            CreatedAt = new DateTime(2024, 1, 3, 8, 55, 25, 373, DateTimeKind.Local).AddTicks(2408),
                             Name = "Dimension"
                         },
                         new
                         {
                             DetailId = 2,
-                            CreatedAt = new DateTime(2024, 1, 3, 9, 3, 52, 39, DateTimeKind.Local).AddTicks(9300),
+                            CreatedAt = new DateTime(2024, 1, 3, 8, 55, 25, 373, DateTimeKind.Local).AddTicks(2417),
                             Name = "Weight"
                         },
                         new
                         {
                             DetailId = 3,
-                            CreatedAt = new DateTime(2024, 1, 3, 9, 3, 52, 39, DateTimeKind.Local).AddTicks(9301),
+                            CreatedAt = new DateTime(2024, 1, 3, 8, 55, 25, 373, DateTimeKind.Local).AddTicks(2418),
                             Name = "Sell Price"
                         },
                         new
                         {
                             DetailId = 4,
-                            CreatedAt = new DateTime(2024, 1, 3, 9, 3, 52, 39, DateTimeKind.Local).AddTicks(9302),
+                            CreatedAt = new DateTime(2024, 1, 3, 8, 55, 25, 373, DateTimeKind.Local).AddTicks(2419),
                             Name = "Warehouse"
                         });
                 });
@@ -174,6 +177,39 @@ namespace InventoryManagement.Migrations
                     b.HasIndex("InventoryID");
 
                     b.ToTable("InventoryMedia", (string)null);
+                });
+
+            modelBuilder.Entity("InventoryManagement.ViewModels.InventoryAddEditViewModel", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InventoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("InventoryAddEditViewModel");
+                });
+
+            modelBuilder.Entity("InventoryManagement.ViewModels.InventoryListViewModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InventoryListViewModel");
                 });
 
             modelBuilder.Entity("InventoryManagement.Models.InventoryDetail", b =>
